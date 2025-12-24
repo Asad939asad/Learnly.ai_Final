@@ -2,7 +2,7 @@
 LLM API Integration Module
 Supports: Google Gemini and Groq
 """
-#AIzaSyCO_u2fToeQ1_Q-d7DLMRc2mjmSXJkxX9I
+
 from google import genai
 from groq import Groq
 
