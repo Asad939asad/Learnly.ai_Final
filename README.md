@@ -271,6 +271,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you find this project useful, please consider giving it a star ⭐
 
----
-
-**Built with ❤️ using AI and modern web technologies**
