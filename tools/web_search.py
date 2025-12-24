@@ -29,8 +29,8 @@ class RobustWebSearcher:
         self.browser = None
         
         # Google Custom Search credentials
-        self.google_api_key = google_api_key or "AIzaSyCGLkcZuJY7HKVBk-tetToWXxpyezHS6Ro"
-        self.google_cse_id = google_cse_id or "d31276b53ca024edc"  # User's Custom Search Engine ID
+        self.google_api_key =
+        self.google_cse_id =
         
         # Setup Markdown converter
         self.converter = html2text.HTML2Text()
