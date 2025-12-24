@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Components Evaluation - Learnly.AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            margin: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-card h2 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .score-card p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .metric-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .metric-box h3 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .metric-box p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .components {
+            padding: 30px;
+        }
+
+        .component-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .component-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .component-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .quality-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .quality-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 1s ease;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .timestamp {
+            background: #fff3cd;
+            padding: 15px;
+            margin: 30px;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Backend Components Evaluation</h1>
+            <p>Microsoft AgentEval Standards</p>
+        </div>
+
+        <div class="score-card">
+            <h2 id="overall-score">Loading...</h2>
+            <p id="grade">Loading...</p>
+        </div>
+
+        <div class="timestamp" id="timestamp"></div>
+
+        <div class="metrics">
+            <div class="metric-box">
+                <h3 id="total-components">-</h3>
+                <p>Total Components</p>
+            </div>
+            <div class="metric-box">
+                <h3 id="successful-tests">-</h3>
+                <p>Successful Tests</p>
+            </div>
+            <div class="metric-box">
+                <h3 id="success-rate">-</h3>
+                <p>Success Rate</p>
+            </div>
+            <div class="metric-box">
+                <h3 id="total-time">-</h3>
+                <p>Total Time</p>
+            </div>
+        </div>
+
+        <div class="components" id="components-container">
+            <!-- Components will be loaded here -->
+        </div>
+
+        <div class="footer">
+            <p>Learnly.AI - Backend Components AgentEval Report</p>
+            <p>Generated using Microsoft AgentEval Standards</p>
+        </div>
+    </div>
+
+    <script>
+        async function loadReport() {
+            try {
+                const response = await fetch('/backend-components-eval');
+                const data = await response.json();
+
+                // Update overall metrics
+                document.getElementById('overall-score').textContent =
+                    data.overall_metrics.avg_quality_score.toFixed(2) + '/100';
+                document.getElementById('grade').textContent = data.overall_metrics.grade;
+
+                document.getElementById('total-components').textContent =
+                    data.overall_metrics.total_components;
+                document.getElementById('successful-tests').textContent =
+                    data.overall_metrics.successful_tests + '/' + data.overall_metrics.total_components;
+                document.getElementById('success-rate').textContent =
+                    data.overall_metrics.success_rate.toFixed(1) + '%';
+                document.getElementById('total-time').textContent =
+                    data.total_execution_time.toFixed(2) + 's';
+
+                // Update timestamp
+                const timestamp = new Date(data.timestamp);
+                document.getElementById('timestamp').innerHTML =
+                    `<strong>Report Generated:</strong> ${timestamp.toLocaleString()}`;
+
+                // Load components
+                const container = document.getElementById('components-container');
+                container.innerHTML = '<h2 style="margin-bottom: 20px;">Component Results</h2>';
+
+                for (const [key, component] of Object.entries(data.component_results)) {
+                    const card = createComponentCard(component);
+                    container.appendChild(card);
+                }
+
+            } catch (error) {
+                console.error('Error loading report:', error);
+                document.querySelector('.container').innerHTML =
+                    '<div style="padding: 40px; text-align: center; color: red;">' +
+                    '<h2>Error Loading Report</h2>' +
+                    '<p>' + error.message + '</p>' +
+                    '</div>';
+            }
+        }
+
+        function createComponentCard(component) {
+            const card = document.createElement('div');
+            card.className = 'component-card';
+
+            const header = document.createElement('div');
+            header.className = 'component-header';
+
+            const name = document.createElement('div');
+            name.className = 'component-name';
+            name.textContent = component.component;
+
+            const badge = document.createElement('div');
+            badge.className = 'status-badge ' + (component.success ? 'status-success' : 'status-fail');
+            badge.textContent = component.success ? 'PASSED' : 'FAILED';
+
+            header.appendChild(name);
+            header.appendChild(badge);
+            card.appendChild(header);
+
+            // Details
+            const details = document.createElement('div');
+            details.className = 'component-details';
+
+            if (component.execution_time !== undefined) {
+                details.appendChild(createDetailItem('Execution Time',
+                    component.execution_time.toFixed(2) + 's'));
+            }
+
+            if (component.quality_score !== undefined) {
+                details.appendChild(createDetailItem('Quality Score',
+                    component.quality_score + '/100'));
+            }
+
+            // Add specific metrics
+            if (component.response_length) {
+                details.appendChild(createDetailItem('Response Length',
+                    component.response_length + ' chars'));
+            }
+            if (component.confidence !== undefined) {
+                details.appendChild(createDetailItem('Confidence',
+                    (component.confidence * 100).toFixed(0) + '%'));
+            }
+            if (component.num_questions !== undefined) {
+                details.appendChild(createDetailItem('Questions',
+                    component.num_questions));
+            }
+            if (component.num_slides !== undefined) {
+                details.appendChild(createDetailItem('Slides',
+                    component.num_slides));
+            }
+            if (component.num_cards !== undefined) {
+                details.appendChild(createDetailItem('Cards',
+                    component.num_cards));
+            }
+
+            card.appendChild(details);
+
+            // Quality bar
+            if (component.quality_score !== undefined) {
+                const barContainer = document.createElement('div');
+                barContainer.className = 'quality-bar';
+                const barFill = document.createElement('div');
+                barFill.className = 'quality-fill';
+                barFill.style.width = component.quality_score + '%';
+                barFill.textContent = component.quality_score + '%';
+                barContainer.appendChild(barFill);
+                card.appendChild(barContainer);
+            }
+
+            // Error message if failed
+            if (!component.success && component.error) {
+                const error = document.createElement('div');
+                error.style.marginTop = '15px';
+                error.style.padding = '10px';
+                error.style.background = '#f8d7da';
+                error.style.borderRadius = '5px';
+                error.style.color = '#721c24';
+                error.style.fontSize = '0.9em';
+                error.innerHTML = '<strong>Error:</strong> ' + component.error;
+                card.appendChild(error);
+            }
+
+            return card;
+        }
+
+        function createDetailItem(label, value) {
+            const item = document.createElement('div');
+            item.className = 'detail-item';
+
+            const labelEl = document.createElement('div');
+            labelEl.className = 'detail-label';
+            labelEl.textContent = label;
+
+            const valueEl = document.createElement('div');
+            valueEl.className = 'detail-value';
+            valueEl.textContent = value;
+
+            item.appendChild(labelEl);
+            item.appendChild(valueEl);
+
+            return item;
+        }
+
+        // Load report on page load
+        loadReport();
+    </script>
+</body>
+
+</html>

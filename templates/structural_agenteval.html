@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structural AgentEval - Learnly.AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 30px;
+            margin: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-display h2 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .overall-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .metric-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-box h3 {
+            font-size: 2.2em;
+            margin-bottom: 5px;
+        }
+
+        .metric-box p {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        .category-section {
+            padding: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 1.8em;
+            color: #333;
+        }
+
+        .category-badge {
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .item-card {
+            background: #f8f9fa;
+            border-left: 4px solid #43e97b;
+            padding: 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-card.failed {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .item-details {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .item-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .status-pass {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 1s ease;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Structural Component Testing</h1>
+            <p>Non-LLM AgentEval Pipeline</p>
+        </div>
+
+        <div class="score-display">
+            <h2 id="overall-score">Loading...</h2>
+            <p id="grade">Loading...</p>
+        </div>
+
+        <div class="overall-metrics">
+            <div class="metric-box">
+                <h3 id="total-tests">-</h3>
+                <p>Total Tests</p>
+            </div>
+            <div class="metric-box">
+                <h3 id="successful-tests">-</h3>
+                <p>Successful</p>
+            </div>
+            <div class="metric-box">
+                <h3 id="failed-tests">-</h3>
+                <p>Failed</p>
+            </div>
+            <div class="metric-box">
+                <h3 id="success-rate">-</h3>
+                <p>Success Rate</p>
+            </div>
+            <div class="metric-box">
+                <h3 id="execution-time">-</h3>
+                <p>Execution Time</p>
+            </div>
+        </div>
+
+        <div id="categories-container"></div>
+
+        <div class="footer">
+            <p>Learnly.AI - Structural AgentEval Report</p>
+            <p id="timestamp"></p>
+        </div>
+    </div>
+
+    <script>
+        async function loadReport() {
+            try {
+                const response = await fetch('/structural-eval');
+                const data = await response.json();
+
+                // Overall metrics
+                document.getElementById('overall-score').textContent =
+                    data.overall_metrics.overall_score.toFixed(2) + '/100';
+                document.getElementById('grade').textContent = data.overall_metrics.grade;
+                document.getElementById('total-tests').textContent = data.overall_metrics.total_tests;
+                document.getElementById('successful-tests').textContent = data.overall_metrics.successful_tests;
+                document.getElementById('failed-tests').textContent = data.overall_metrics.failed_tests;
+                document.getElementById('success-rate').textContent =
+                    data.overall_metrics.overall_success_rate.toFixed(2) + '%';
+                document.getElementById('execution-time').textContent =
+                    data.execution_time.toFixed(2) + 's';
+
+                const timestamp = new Date(data.timestamp);
+                document.getElementById('timestamp').textContent =
+                    'Generated: ' + timestamp.toLocaleString();
+
+                // Load categories
+                const container = document.getElementById('categories-container');
+
+                for (const [key, category] of Object.entries(data.category_results)) {
+                    const section = createCategorySection(category);
+                    container.appendChild(section);
+                }
+
+            } catch (error) {
+                console.error('Error loading report:', error);
+                document.querySelector('.container').innerHTML =
+                    '<div style="padding: 40px; text-align: center; color: red;">' +
+                    '<h2>Error Loading Report</h2><p>' + error.message + '</p></div>';
+            }
+        }
+
+        function createCategorySection(category) {
+            const section = document.createElement('div');
+            section.className = 'category-section';
+
+            const header = document.createElement('div');
+            header.className = 'category-header';
+
+            const title = document.createElement('div');
+            title.className = 'category-title';
+            title.textContent = category.category;
+
+            const badge = document.createElement('div');
+            badge.className = 'category-badge ' +
+                (category.success_rate === 100 ? 'badge-success' : 'badge-warning');
+            badge.textContent = category.successful + '/' + category.total_tests + ' Passed';
+
+            header.appendChild(title);
+            header.appendChild(badge);
+            section.appendChild(header);
+
+            // Progress bar
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+            const progressFill = document.createElement('div');
+            progressFill.className = 'progress-fill';
+            progressFill.style.width = category.success_rate + '%';
+            progressFill.textContent = category.success_rate.toFixed(1) + '%';
+            progressBar.appendChild(progressFill);
+            section.appendChild(progressBar);
+
+            // Items grid
+            const grid = document.createElement('div');
+            grid.className = 'items-grid';
+
+            category.detailed_results.forEach(item => {
+                grid.appendChild(createItemCard(item));
+            });
+
+            section.appendChild(grid);
+
+            return section;
+        }
+
+        function createItemCard(item) {
+            const card = document.createElement('div');
+            card.className = 'item-card' + (item.success ? '' : ' failed');
+
+            const name = document.createElement('div');
+            name.className = 'item-name';
+            name.textContent = item.module || item.template || item.test || item.directory || 'Item';
+            card.appendChild(name);
+
+            const status = document.createElement('div');
+            status.className = 'item-status ' + (item.success ? 'status-pass' : 'status-fail');
+            status.textContent = item.success ? 'PASSED' : 'FAILED';
+            card.appendChild(status);
+
+            // Additional details
+            if (item.file_size) {
+                const details = document.createElement('div');
+                details.className = 'item-details';
+                details.textContent = 'Size: ' + item.file_size + ' bytes';
+                card.appendChild(details);
+            }
+
+            if (item.file_count !== undefined) {
+                const details = document.createElement('div');
+                details.className = 'item-details';
+                details.textContent = 'Files: ' + item.file_count;
+                card.appendChild(details);
+            }
+
+            if (item.tables) {
+                const details = document.createElement('div');
+                details.className = 'item-details';
+                details.textContent = 'Tables: ' + item.tables.join(', ');
+                card.appendChild(details);
+            }
+
+            if (item.error) {
+                const error = document.createElement('div');
+                error.className = 'item-details';
+                error.style.color = '#dc3545';
+                error.style.marginTop = '5px';
+                error.textContent = 'Error: ' + item.error.substring(0, 100);
+                card.appendChild(error);
+            }
+
+            return card;
+        }
+
+        loadReport();
+    </script>
+</body>
+
+</html>

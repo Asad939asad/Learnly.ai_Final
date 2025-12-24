@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learnly.ai - Learning Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        accent: '#60a5fa',
+                        secondary: '#2563eb',
+                        tertiary: '#1d4ed8',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .bg-white border-b-2 border-gray-200 {
+            background: white;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .sticky-sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sticky-sidebar::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        .chat-container {
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+
+        .chat-container {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+        }
+
+        .message-user {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .message-agent {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .typing-indicator span {
+            animation: blink 1.4s infinite both;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .5;
+            }
+        }
+
+        .test-box {
+            background: white;
+            color: #1f2937;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .concept-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .session-item {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e5e7eb;
+        }
+
+        .session-item:hover {
+            background: #f9fafb;
+            border-color: #3b82f6;
+        }
+
+        .session-item.active {
+            background: #dbeafe;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body class="bg-white font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-blue-600 text-white sticky-sidebar">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold mb-8 flex items-center">
+                    Learnly.ai
+                </h1>
+                <nav class="space-y-2">
+                    <a href="/" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+                    <a href="/ai_assistant"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">AI Assistant</span>
+                    </a>
+                    <a href="/learning_agent" class="flex items-center space-x-3 p-3 rounded-lg bg-white/10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Learning Agent</span>
+                    </a>
+                    <a href="/exam_reviewer"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Exam Reviewer</span>
+                    </a>
+                    <a href="/quizes"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Quizes</span>
+                    </a>
+                    <a href="/flashcards"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                        <span class="font-medium">Flash Cards</span>
+                    </a>
+                    <a href="/slidedecks"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Slide Decks</span>
+                    </a>
+                    <a href="/manage_books"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Books Manager</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top Bar -->
+            <div class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
+                <div class="flex space-x-6">
+                    <a href="#" class="text-violet-600 text-2xl hover:text-blue-800 font-bold font-inter">
+                        Adaptive Learning Agent
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <img src="https://ui-avatars.com/api/?name=Asad" alt="Asad"
+                            class="w-8 h-8 rounded-full ring-2 ring-primary">
+                        <span class="text-sm font-semibold text-gray-800">Asad</span>
+                    </div>
+                    <a href="/logout" class="text-gray-600 hover:text-gray-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="max-w-7xl mx-auto p-6">
+                <!-- Welcome Banner -->
+                <div
+                    class="mb-6 bg-white border-b-2 border-gray-200 rounded-xl p-6 text-gray-800 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2"> Adaptive Learning Agent</h2>
+                        <p class="text-lg text-gray-600">Ask questions, upload images, and learn with AI-powered
+                            assistance
+                        </p>
+                    </div>
+                    <button onclick="startNewChat()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all">
+                        New Chat
+                    </button>
+                </div>
+
+                <!-- Chat Container -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+                    <div id="chatContainer" class="chat-container mb-4 space-y-4">
+                        <!-- Welcome message -->
+                        <div class="flex justify-start">
+                            <div class="message-agent max-w-3xl rounded-2xl p-4 shadow-sm">
+                                <p class="text-sm font-semibold text-primary mb-2"> Learning Agent</p>
+                                <p>Hello! I'm your adaptive learning assistant. I can help you learn by:</p>
+                                <ul class="list-disc list-inside mt-2 space-y-1">
+                                    <li>Answering your questions with detailed explanations</li>
+                                    <li>Processing images with OCR to extract text</li>
+                                    <li>Searching the web and Wikipedia for context</li>
+                                    <li>Creating test questions to validate your understanding</li>
+                                    <li>Suggesting follow-up topics to explore</li>
+                                </ul>
+                                <p class="mt-3 text-sm text-gray-600">Ask me anything or upload an image to get started!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="border-t pt-4">
+                        <!-- Image Preview -->
+                        <div id="imagePreviewContainer" class="hidden mb-3">
+                            <div class="flex items-center space-x-3 bg-white p-3 rounded-lg">
+                                <img id="imagePreview" class="image-preview rounded-lg border-2 border-primary" />
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold text-primary" id="imageName"></p>
+                                    <p class="text-xs text-gray-500">Image will be processed with OCR</p>
+                                </div>
+                                <button onclick="clearImage()" class="text-red-500 hover:text-red-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <input type="file" id="imageInput" accept="image/*" class="hidden"
+                                onchange="handleImageSelect(event)">
+                            <button onclick="document.getElementById('imageInput').click()"
+                                class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                            </button>
+                            <input type="text" id="questionInput"
+                                class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                placeholder="Ask a question or describe what you'd like to learn..."
+                                onkeypress="if(event.key === 'Enter') askQuestion()">
+                            <button onclick="askQuestion()"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Sidebar -->
+        <div class="w-80 bg-white border-l sticky-sidebar">
+            <div class="p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-gray-800"> Chat History</h2>
+                    <button onclick="startNewChat()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm font-semibold transition-all">
+                        + New
+                    </button>
+                </div>
+
+                <div id="sessionList" class="space-y-2 overflow-y-auto" style="max-height: calc(100vh - 120px);">
+                    <!-- Sessions will be loaded here -->
+                    <div class="text-center text-gray-500 py-8">
+                        <p class="text-sm">Loading sessions...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedImage = null;
+        let currentSessionId = null;
+
+        // Load history on page load
+        window.addEventListener('DOMContentLoaded', function () {
+            loadHistory();
+            loadSessions();
+        });
+
+        async function loadSessions() {
+            try {
+                const response = await fetch('/list_learning_agent_sessions');
+                const data = await response.json();
+
+                const sessionList = document.getElementById('sessionList');
+
+                if (data.sessions && data.sessions.length > 0) {
+                    sessionList.innerHTML = data.sessions.map(session => {
+                        const date = new Date(session.last_updated);
+                        const timeAgo = getTimeAgo(date);
+                        const isActive = session.session_id === currentSessionId;
+
+                        return `
+                            <div class="session-item ${isActive ? 'active' : ''}" onclick="switchSession('${session.session_id}')">
+                                <div class="flex justify-between items-start mb-1">
+                                    <p class="text-sm font-semibold text-gray-800 truncate flex-1">${session.first_message}</p>
+                                    <span class="text-xs text-gray-500 ml-2">${session.message_count}</span>
+                                </div>
+                                <p class="text-xs text-gray-500">${timeAgo}</p>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    sessionList.innerHTML = '<div class="text-center text-gray-500 py-8"><p class="text-sm">No chat history yet</p></div>';
+                }
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+            }
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+
+            return date.toLocaleDateString();
+        }
+
+        async function switchSession(sessionId) {
+            if (sessionId === currentSessionId) return;
+
+            console.log(' Switching to session:', sessionId);
+            localStorage.setItem('learning_agent_session_id', sessionId);
+            location.reload();
+        }
+
+        async function loadHistory() {
+            // Check if there's a session ID in localStorage
+            const savedSessionId = localStorage.getItem('learning_agent_session_id');
+            console.log(' Checking for saved session:', savedSessionId);
+
+            if (savedSessionId) {
+                try {
+                    console.log(' Fetching history...');
+                    const response = await fetch(`/get_learning_agent_history/${savedSessionId}`);
+                    const data = await response.json();
+                    console.log(' Received data:', data);
+
+                    if (data.turns && data.turns.length > 0) {
+                        currentSessionId = savedSessionId;
+
+                        // Clear welcome message
+                        const chatContainer = document.getElementById('chatContainer');
+                        chatContainer.innerHTML = '';
+
+                        console.log(` Loading ${data.turns.length} messages...`);
+
+                        // Display all previous turns
+                        data.turns.forEach(turn => {
+                            // Display user message
+                            addMessage(turn.user_input, true, null);
+
+                            // Format and display agent response
+                            const responseData = {
+                                response: turn.agent_response,
+                                test_snippet: turn.metadata?.test_snippet || '',
+                                key_concepts: turn.metadata?.key_concepts || [],
+                                follow_up_suggestions: turn.metadata?.follow_up_suggestions || [],
+                                confidence: turn.metadata?.confidence || 0
+                            };
+                            addMessage(formatResponse(responseData), false);
+                        });
+
+                        console.log(` Loaded ${data.turns.length} previous messages`);
+                    } else {
+                        console.log('ℹ No previous messages');
+                    }
+                } catch (error) {
+                    console.error(' Error loading history:', error);
+                }
+            } else {
+                console.log('ℹ No saved session');
+            }
+        }
+
+        function startNewChat() {
+            if (confirm('Start a new conversation? Current chat will be saved.')) {
+                localStorage.removeItem('learning_agent_session_id');
+                currentSessionId = null;
+                location.reload();
+            }
+        }
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedImage = file;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imageName').textContent = file.name;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearImage() {
+            selectedImage = null;
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+        }
+
+        function addMessage(content, isUser, imageUrl = null) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+
+            const messageContent = document.createElement('div');
+            messageContent.className = `${isUser ? 'message-user' : 'message-agent'} max-w-3xl rounded-2xl p-4 shadow-sm`;
+
+            if (!isUser) {
+                const label = document.createElement('p');
+                label.className = 'text-sm font-semibold mb-2';
+                label.style.color = isUser ? 'gray' : '#3b82f6';
+                label.textContent = isUser ? ' You' : ' Learning Agent';
+                messageContent.appendChild(label);
+            }
+
+            // Add image if present
+            if (imageUrl) {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.className = 'image-preview rounded-lg border-2 border-white mb-3';
+                messageContent.appendChild(img);
+            }
+
+            const text = document.createElement('div');
+            text.innerHTML = content;
+            messageContent.appendChild(text);
+
+            messageDiv.appendChild(messageContent);
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const chatContainer = document.getElementById('chatContainer');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'flex justify-start';
+            typingDiv.innerHTML = `
+                <div class="message-agent rounded-2xl p-4 shadow-sm">
+                    <p class="text-sm font-semibold text-primary mb-2"> Learning Agent</p>
+                    <div class="typing-indicator flex space-x-1">
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(typingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function formatResponse(data) {
+            // Escape HTML to prevent rendering issues
+            function escapeHtml(text) {
+                return text
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            // Format main response
+            let responseText = data.response || '';
+
+            // First, protect mathematical expressions with asterisks (multiplication)
+            // Pattern: number * number or ) * ( 
+            responseText = responseText
+                .replace(/(\d+)\s*\*\s*(\d+)/g, '$1 &times; $2')  // 2 * 5 -> 2 × 5
+                .replace(/(\))\s*\*\s*(\()/g, '$1 &times; $2');    // ) * ( -> ) × (
+
+            responseText = escapeHtml(responseText)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code class="bg-primary px-1 rounded">$1</code>')
+                .replace(/×/g, '&times;')  // Multiplication symbol
+                .replace(/÷/g, '&divide;')  // Division symbol
+                .replace(/\n\n/g, '</p><p class="mb-4 leading-relaxed">')
+                .replace(/\n/g, '<br>');
+
+            let html = `<div class="prose max-w-none"><p class="mb-4 leading-relaxed">${responseText}</p></div>`;
+
+            if (data.test_snippet) {
+                // Ensure test_snippet is a string
+                let testText = typeof data.test_snippet === 'string'
+                    ? data.test_snippet
+                    : String(data.test_snippet || '');
+
+                testText = testText
+                    .replace(/(\d+)\s*\*\s*(\d+)/g, '$1 &times; $2')
+                    .replace(/(\))\s*\*\s*(\()/g, '$1 &times; $2');
+
+                testText = escapeHtml(testText)
+                    .replace(/×/g, '&times;')
+                    .replace(/÷/g, '&divide;')
+                    .replace(/`(.*?)`/g, '<code class="bg-white/20 px-1 rounded">$1</code>');
+
+                html += `
+                    <div class="test-box text-gray-800 mt-6 p-4">
+                        <p class="font-bold text-lg mb-3">🧪 Test Your Understanding:</p>
+                        <p class="leading-relaxed">${testText}</p>
+                    </div>
+                `;
+            }
+
+            if (data.key_concepts && data.key_concepts.length > 0) {
+                html += `
+                    <div class="mt-6 p-4 bg-white rounded-lg border border-gray-200">
+                        <p class="text-sm font-bold text-gray-800 mb-3"> Key Concepts:</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${data.key_concepts.map(concept => `<span class="concept-tag">${escapeHtml(concept)}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (data.follow_up_suggestions && data.follow_up_suggestions.length > 0) {
+                html += `
+                    <div class="mt-6 p-4 bg-white rounded-lg border border-gray-200">
+                        <p class="text-sm font-bold text-gray-800 mb-3"> Follow-up Suggestions:</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            ${data.follow_up_suggestions.map(s => `<li class="leading-relaxed">${escapeHtml(s)}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (data.confidence) {
+                const confidencePercent = Math.round(data.confidence * 100);
+                html += `
+                    <div class="mt-3 text-xs text-gray-500">
+                        Confidence: ${confidencePercent}%
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        async function askQuestion() {
+            const input = document.getElementById('questionInput');
+            const question = input.value.trim();
+
+            if (!question && !selectedImage) {
+                alert('Please enter a question or upload an image');
+                return;
+            }
+
+            // Display user message
+            let userMessage = question || 'Uploaded an image';
+            const imageUrl = selectedImage ? document.getElementById('imagePreview').src : null;
+            addMessage(userMessage, true, imageUrl);
+
+            input.value = '';
+            showTypingIndicator();
+
+            try {
+                const formData = new FormData();
+                formData.append('question', question);
+                if (selectedImage) {
+                    formData.append('image', selectedImage);
+                }
+                if (currentSessionId) {
+                    formData.append('session_id', currentSessionId);
+                }
+
+                const response = await fetch('/ask_learning_agent', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                hideTypingIndicator();
+
+                if (data.error) {
+                    addMessage(` Error: ${data.error}`, false);
+                } else {
+                    currentSessionId = data.session_id;
+                    // Save session ID to localStorage
+                    localStorage.setItem('learning_agent_session_id', currentSessionId);
+                    addMessage(formatResponse(data), false);
+
+                    // Reload session list to update sidebar
+                    loadSessions();
+                }
+
+                clearImage();
+
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage(` Error: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+
+</html>

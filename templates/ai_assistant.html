@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Learnly.ai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        accent: '#60a5fa',
+                        secondary: '#2563eb',
+                        tertiary: '#1d4ed8',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .bg-white border-b-2 border-gray-200 {
+            background: white;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .chat-message {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sticky-sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sticky-sidebar::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        #chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chat-container::-webkit-scrollbar-track {
+            background: linear-gradient(135deg, rgba(159, 61, 255, 0.1) 0%, rgba(255, 61, 159, 0.1) 100%);
+        }
+
+        #chat-container::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 10px;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Markdown styling */
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3 {
+            font-weight: bold;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+        }
+
+        .markdown-content h1 {
+            font-size: 1.5em;
+        }
+
+        .markdown-content h2 {
+            font-size: 1.3em;
+        }
+
+        .markdown-content h3 {
+            font-size: 1.1em;
+        }
+
+        .markdown-content strong {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .markdown-content em {
+            font-style: italic;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-left: 1.5em;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.25em;
+        }
+
+        .markdown-content p {
+            margin-bottom: 0.75em;
+        }
+
+        .markdown-content code {
+            background: linear-gradient(135deg, rgba(159, 61, 255, 0.1) 0%, rgba(255, 61, 159, 0.1) 100%);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .markdown-content pre {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 1em;
+            border-radius: 0.5em;
+            overflow-x: auto;
+            margin: 0.5em 0;
+        }
+
+        .markdown-content pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+    </style>
+
+</head>
+
+<body class="bg-white font-sans">
+    <div class="flex h-screen">
+        <!-- Left Sidebar - Navigation -->
+        <div class="w-64 bg-blue-600 text-white sticky-sidebar">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold mb-8">Learnly.ai</h1>
+                <nav class="space-y-2">
+                    <a href="/" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+                    <a href="/ai_assistant" class="flex items-center space-x-3 p-3 rounded-lg bg-white/10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">AI Assistant</span>
+                    </a>
+                    <a href="/learning_agent"
+                        class="flex items-center space-x-3 p-3 rounded-lg {% if active_page == 'learning_agent' %}bg-white/10{% else %}hover:bg-white/10 transition-colors{% endif %}">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Learning Agent</span>
+                    </a>
+                    <a href="/exam_reviewer"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Exam Reviewer</span>
+                    </a>
+                    <a href="/quizes"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Quizes</span>
+                    </a>
+                    <a href="/flashcards"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                        <span class="font-medium">Flash Cards</span>
+                    </a>
+                    <a href="/slidedecks"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Slide Decks</span>
+                    </a>
+                    <a href="/manage_books"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Books Manager</span>
+                    </a>
+                </nav>
+
+                <!-- Chat History Section -->
+                <div class="mt-6 border-t border-white/20 pt-4">
+                    <div class="flex items-center justify-between mb-3 px-3">
+                        <h3 class="text-sm font-semibold text-white/80">Chat History</h3>
+                        <button onclick="loadChatSessions()" class="text-white/60 hover:text-white/100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="history-list" class="space-y-1 max-h-64 overflow-y-auto px-2">
+                        <div class="text-xs text-white/50 text-center py-2">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Chat Area -->
+            <div class="flex-1 flex flex-col">
+                <!-- Top Bar -->
+                <div class="bg-white border-b p-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-violet-600">AI Assistant</h2>
+                        <p class="text-sm text-gray-600">Ask me anything - calendar, tasks, and knowledge</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="saveChatHistory()"
+                            class="text-sm bg-white/10 text-primary px-3 py-1 rounded-lg hover:bg-white/20 transition-colors">
+                            Save Chat
+                        </button>
+                        <div class="flex items-center space-x-2">
+                            <img src="https://ui-avatars.com/api/?name=Asad" alt="Asad"
+                                class="w-8 h-8 rounded-full ring-2 ring-primary">
+                            <span class="text-sm font-semibold text-gray-800">Asad</span>
+                        </div>
+                        <a href="/logout" class="text-gray-600 hover:text-gray-800">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                </path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Chat Container -->
+                <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <div class="chat-message flex justify-start">
+                        <div class="max-w-2xl">
+                            <div
+                                class="bg-gradient-to-r from-primary to-secondary text-white rounded-2xl p-4 shadow-lg">
+                                <p class="text-2xl font-bold text-white mb-3">Asad Hi! I'm your AI Assistant</p>
+                                <p class="text-base text-white/95 mb-4">I'm here to help you stay organized and learn
+                                    effectively. I can assist you with:</p>
+                                <ul class="text-sm space-y-2 text-white/90 mb-4">
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span><strong>Calendar & Meetings</strong> - Schedule events, view your
+                                            calendar, manage appointments</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span><strong>Study Plans & Schedules</strong> - Create personalized learning
+                                            schedules and task plans</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span><strong>Questions & Information</strong> - Get answers to your questions
+                                            with web search and knowledge base</span>
+                                    </li>
+                                </ul>
+                                <div class="bg-white/10 rounded-lg p-3 border border-white/20">
+                                    <p class="text-sm font-semibold text-white mb-1">💡 Try asking:</p>
+                                    <p class="text-xs text-white/80">"Show my meetings for today"</p>
+                                    <p class="text-xs text-white/80">"Create a 5-day Python learning plan"</p>
+                                    <p class="text-xs text-white/80">"What is machine learning?"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="border-t bg-white p-4">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="flex space-x-3">
+                            <input type="text" id="user-input" placeholder="Ask me anything..."
+                                class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                onkeypress="if(event.key === 'Enter') sendMessage()">
+                            <button onclick="sendMessage()"
+                                class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all font-medium flex items-center space-x-2">
+                                <span>Send</span>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="loading-indicator"
+                            class="hidden mt-2 text-sm text-gray-600 flex items-center space-x-2">
+                            <svg class="animate-spin h-4 w-4 text-primary" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            <span>Processing...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Schedules -->
+            <div class="w-80 bg-white border-l overflow-y-auto">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800"> Task Schedules</h3>
+                        <button onclick="loadSchedules()" class="text-primary hover:text-primary/80">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="schedules-list" class="space-y-2">
+                        <div class="text-center text-gray-500 py-4">
+                            <svg class="animate-spin h-6 w-6 mx-auto text-primary" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            <p class="text-sm mt-2">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chatMessages = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSchedules();
+            loadChatHistory();
+            loadChatSessions(); // Load history sidebar
+        });
+
+        async function loadChatSessions() {
+            try {
+                const response = await fetch('/get_chat_sessions');
+                const data = await response.json();
+                const listDiv = document.getElementById('history-list');
+
+                console.log(' Chat sessions loaded:', data.sessions);
+
+                if (data.sessions && data.sessions.length > 0) {
+                    listDiv.innerHTML = data.sessions.map(s => {
+                        console.log(`Session ${s.filename}: ${s.message_count} messages`);
+                        return `
+                        <button onclick="loadSpecificSession('${s.filename}')" 
+                            class="w-full text-left p-2 rounded-lg hover:bg-white/10 transition-colors group">
+                            <div class="flex items-start space-x-2">
+                                <svg class="w-4 h-4 text-white/60 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                </svg>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs text-white/80 truncate group-hover:text-white">
+                                        ${s.message_count || 0} messages
+                                    </p>
+                                    <p class="text-xs text-white/50 truncate">${s.created}</p>
+                                </div>
+                            </div>
+                        </button>
+                    `;
+                    }).join('');
+                } else {
+                    listDiv.innerHTML = '<p class="text-xs text-white/50 text-center py-2">No history yet</p>';
+                }
+            } catch (error) {
+                console.error(' Error loading sessions:', error);
+                document.getElementById('history-list').innerHTML = '<p class="text-xs text-red-300 text-center py-2">Failed to load</p>';
+            }
+        }
+
+        async function loadSpecificSession(filename) {
+            try {
+                console.log(` Loading session: ${filename}`);
+                const response = await fetch(`/load_chat_session/${filename}`);
+                const data = await response.json();
+
+                console.log(` Session data:`, data);
+
+                if (data.messages && data.messages.length > 0) {
+                    // Clear current chat
+                    const container = document.getElementById('chat-container');
+                    container.innerHTML = '';
+
+                    // Load messages - ONLY display query and final_response
+                    chatMessages = data.messages;
+                    data.messages.forEach(msg => {
+                        if (msg.role === 'user') {
+                            addMessage(msg.content, 'user');
+                        } else if (msg.role === 'assistant') {
+                            // Only display the final_response text, not the full data object
+                            addMessage(msg.content, 'assistant');
+                        }
+                    });
+
+                    console.log(` Loaded ${data.messages.length} messages from session: ${filename}`);
+                }
+            } catch (error) {
+                console.error(' Error loading session:', error);
+                alert(' Failed to load chat session');
+            }
+        }
+
+        async function deleteSession(filename) {
+            if (!confirm('Delete this chat session?')) return;
+
+            try {
+                const response = await fetch(`/delete_chat_session/${filename}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log(` Deleted session: ${filename}`);
+                    loadChatSessions(); // Refresh the list
+                } else {
+                    alert('Failed to delete session');
+                }
+            } catch (error) {
+                console.error('Error deleting session:', error);
+                alert(' Failed to delete session');
+            }
+        }
+
+        async function loadChatHistory() {
+            try {
+                const response = await fetch('/load_chat_history');
+                const data = await response.json();
+                if (data.messages && data.messages.length > 0) {
+                    chatMessages = data.messages;
+                    // Optionally display loaded messages
+                    console.log('Loaded chat history:', chatMessages.length, 'messages');
+                }
+            } catch (error) {
+                console.error('Error loading chat history:', error);
+            }
+        }
+
+        async function autoSaveChatHistory() {
+            // Only save if there are messages
+            if (chatMessages.length === 0) {
+                console.log('⏭ Skipping save - no messages');
+                return;
+            }
+
+            try {
+                const response = await fetch('/save_chat_history', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: chatMessages })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    console.log(' Auto-saved chat history');
+                    loadChatSessions(); // Refresh sidebar
+                }
+            } catch (error) {
+                console.error('Error auto-saving chat history:', error);
+            }
+        }
+
+        async function loadSchedules() {
+            try {
+                const response = await fetch('/get_schedules');
+                const data = await response.json();
+                const listDiv = document.getElementById('schedules-list');
+
+                if (data.schedules && data.schedules.length > 0) {
+                    listDiv.innerHTML = data.schedules.map(s => `
+                        <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:border-primary transition-colors">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-800 line-clamp-2">${s.name.replace('.csv', '').replace(/_/g, ' ')}</p>
+                                    <p class="text-xs text-gray-500 mt-1">${s.created}</p>
+                                    <p class="text-xs text-gray-400">${(s.size / 1024).toFixed(1)} KB</p>
+                                </div>
+                                <a href="/download_schedule/${s.name}" class="ml-2 text-primary hover:text-primary/80 flex-shrink-0" download>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    listDiv.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No schedules yet</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('schedules-list').innerHTML = '<p class="text-sm text-red-500 text-center py-4">Failed to load</p>';
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const query = input.value.trim();
+            if (!query) return;
+
+            addMessage(query, 'user');
+            chatMessages.push({ role: 'user', content: query, timestamp: new Date().toISOString() });
+            input.value = '';
+            document.getElementById('loading-indicator').classList.remove('hidden');
+
+            try {
+                const response = await fetch('/ask_agent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                const data = await response.json();
+                document.getElementById('loading-indicator').classList.add('hidden');
+                displayAgentResponse(data);
+                chatMessages.push({ role: 'assistant', content: data.final_response, data: data, timestamp: new Date().toISOString() });
+
+                // Auto-save after each message
+                await autoSaveChatHistory();
+
+                if (data.routing?.branch === 'task_scheduler') setTimeout(loadSchedules, 1000);
+            } catch (error) {
+                document.getElementById('loading-indicator').classList.add('hidden');
+                addMessage('Error occurred. Please try again.', 'assistant', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        function addMessage(text, sender, type = 'normal') {
+            const container = document.getElementById('chat-container');
+            const bgColor = sender === 'user' ? 'bg-blue-600 text-white' : type === 'error' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800';
+
+            // Parse markdown for assistant messages
+            const content = sender === 'assistant' && type !== 'error'
+                ? `<div class="markdown-content text-gray-800">${marked.parse(text)}</div>`
+                : `<p class="whitespace-pre-wrap">${text}</p>`;
+
+            container.innerHTML += `
+                <div class="chat-message flex ${sender === 'user' ? 'justify-end' : 'justify-start'}">
+                    <div class="max-w-2xl">
+                        <div class="${bgColor} rounded-2xl p-4 shadow">
+                            ${content}
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function displayAgentResponse(data) {
+            const branch = data.routing?.branch || 'unknown';
+            const result = data.branch_result;
+            const icons = { calendar: '', calendar_view: '', task_scheduler: '', search_rag: '' };
+
+            let content = `<div class="max-w-3xl w-full"><div class="bg-primary rounded-2xl p-4 shadow space-y-3">`;
+            content += `<div class="flex items-center space-x-2 text-sm text-gray-600"><span>${icons[branch] || ''}</span><span class="font-medium">${branch.replace('_', ' ').toUpperCase()}</span></div>`;
+
+            if (branch === 'calendar_view' && result.meetings) {
+                content += `<div class="bg-white rounded-lg p-3"><h4 class="font-semibold text-gray-800 mb-2"> Meetings (${result.count})</h4>`;
+                result.meetings.forEach(m => content += `<div class="border-l-4 border-primary pl-3 py-2 mb-2"><p class="font-medium text-gray-800">${m.summary || 'Untitled'}</p><p class="text-sm text-gray-600">${m.start || 'No time'}</p></div>`);
+                content += `</div>`;
+            }
+
+            if (branch === 'calendar' && result.event_id) {
+                content += `<div class="bg-white rounded-lg p-3"><h4 class="font-semibold text-gray-800 mb-2"> Meeting Scheduled</h4><p class="text-sm text-gray-600"> ${result.title}</p><p class="text-sm text-gray-600"> ${result.start_time}</p></div>`;
+            }
+
+            if (branch === 'task_scheduler' && result.csv_path) {
+                content += `<div class="bg-white rounded-lg p-3"><h4 class="font-semibold text-gray-800 mb-2"> Schedule Created</h4><p class="text-sm text-gray-600"> ${result.total_days} days</p><p class="text-sm text-gray-600"> Check sidebar →</p></div>`;
+            }
+
+            // Render markdown for final response
+            content += `<div class="markdown-content text-white">${marked.parse(data.final_response)}</div></div></div>`;
+
+            document.getElementById('chat-container').innerHTML += `<div class="chat-message flex justify-start">${content}</div>`;
+            document.getElementById('chat-container').scrollTop = document.getElementById('chat-container').scrollHeight;
+        }
+    </script>
+</body>
+
+</html>

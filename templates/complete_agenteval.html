@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete AgentEval - Learnly.AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .score-banner {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 30px;
+            margin: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-banner h2 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .metric-card p {
+            opacity: 0.9;
+        }
+
+        .component-section {
+            padding: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .component-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .component-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .test-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .test-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #4facfe;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .test-id {
+            font-weight: bold;
+            color: #4facfe;
+            font-size: 1.1em;
+        }
+
+        .test-query {
+            color: #333;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .test-metrics {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .test-metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .test-metric-label {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .test-metric-value {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .success-badge {
+            background: #d4edda;
+            color: #155724;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .quality-indicator {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .quality-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 1s ease;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Complete AgentEval Pipeline</h1>
+            <p>Microsoft Educational Agents Standards</p>
+        </div>
+
+        <div class="score-banner">
+            <h2 id="overall-score">Loading...</h2>
+            <p id="grade">Loading...</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3 id="total-tests">-</h3>
+                <p>Total Tests</p>
+            </div>
+            <div class="metric-card">
+                <h3 id="successful-tests">-</h3>
+                <p>Successful</p>
+            </div>
+            <div class="metric-card">
+                <h3 id="success-rate">-</h3>
+                <p>Success Rate</p>
+            </div>
+            <div class="metric-card">
+                <h3 id="total-time">-</h3>
+                <p>Total Time</p>
+            </div>
+        </div>
+
+        <div id="components-container"></div>
+
+        <div class="footer">
+            <p>Learnly.AI - Complete AgentEval Report</p>
+            <p id="timestamp"></p>
+        </div>
+    </div>
+
+    <script>
+        async function loadReport() {
+            try {
+                const response = await fetch('/complete-agenteval');
+                const data = await response.json();
+
+                // Overall metrics
+                document.getElementById('overall-score').textContent =
+                    data.overall_metrics.overall_quality_score + '/100';
+                document.getElementById('grade').textContent = data.overall_metrics.grade;
+                document.getElementById('total-tests').textContent = data.overall_metrics.total_tests;
+                document.getElementById('successful-tests').textContent = data.overall_metrics.successful_tests;
+                document.getElementById('success-rate').textContent =
+                    data.overall_metrics.overall_success_rate.toFixed(1) + '%';
+                document.getElementById('total-time').textContent =
+                    data.total_execution_time.toFixed(2) + 's';
+
+                const timestamp = new Date(data.timestamp);
+                document.getElementById('timestamp').textContent =
+                    'Generated: ' + timestamp.toLocaleString();
+
+                // Load components
+                const container = document.getElementById('components-container');
+
+                for (const [key, component] of Object.entries(data.component_results)) {
+                    const section = createComponentSection(component);
+                    container.appendChild(section);
+                }
+
+            } catch (error) {
+                console.error('Error loading report:', error);
+                document.querySelector('.container').innerHTML =
+                    '<div style="padding: 40px; text-align: center; color: red;">' +
+                    '<h2>Error Loading Report</h2><p>' + error.message + '</p></div>';
+            }
+        }
+
+        function createComponentSection(component) {
+            const section = document.createElement('div');
+            section.className = 'component-section';
+
+            const title = document.createElement('h2');
+            title.textContent = component.component;
+            section.appendChild(title);
+
+            // Stats
+            const stats = document.createElement('div');
+            stats.className = 'component-stats';
+
+            stats.appendChild(createStatItem(component.total_tests, 'Total Tests'));
+            stats.appendChild(createStatItem(component.successful, 'Successful'));
+            stats.appendChild(createStatItem(component.success_rate.toFixed(1) + '%', 'Success Rate'));
+            stats.appendChild(createStatItem(component.avg_execution_time.toFixed(2) + 's', 'Avg Time'));
+            stats.appendChild(createStatItem(component.avg_quality_score, 'Avg Quality'));
+
+            section.appendChild(stats);
+
+            // Tests
+            const testGrid = document.createElement('div');
+            testGrid.className = 'test-grid';
+
+            component.detailed_results.forEach(test => {
+                testGrid.appendChild(createTestCard(test));
+            });
+
+            section.appendChild(testGrid);
+
+            return section;
+        }
+
+        function createStatItem(value, label) {
+            const item = document.createElement('div');
+            item.className = 'stat-item';
+
+            const valueEl = document.createElement('div');
+            valueEl.className = 'stat-value';
+            valueEl.textContent = value;
+
+            const labelEl = document.createElement('div');
+            labelEl.className = 'stat-label';
+            labelEl.textContent = label;
+
+            item.appendChild(valueEl);
+            item.appendChild(labelEl);
+
+            return item;
+        }
+
+        function createTestCard(test) {
+            const card = document.createElement('div');
+            card.className = 'test-card';
+
+            const header = document.createElement('div');
+            header.className = 'test-header';
+
+            const id = document.createElement('div');
+            id.className = 'test-id';
+            id.textContent = test.test_id;
+
+            const badge = document.createElement('div');
+            badge.className = 'success-badge';
+            badge.textContent = test.success ? 'PASSED' : 'FAILED';
+
+            header.appendChild(id);
+            header.appendChild(badge);
+            card.appendChild(header);
+
+            const query = document.createElement('div');
+            query.className = 'test-query';
+            query.textContent = '"' + test.query + '"';
+            card.appendChild(query);
+
+            const metrics = document.createElement('div');
+            metrics.className = 'test-metrics';
+
+            metrics.appendChild(createTestMetric('Time', test.execution_time.toFixed(2) + 's'));
+
+            if (test.quality_score !== undefined) {
+                metrics.appendChild(createTestMetric('Quality', test.quality_score + '/100'));
+            }
+            if (test.response_length !== undefined) {
+                metrics.appendChild(createTestMetric('Length', test.response_length + ' chars'));
+            }
+            if (test.has_test_snippet !== undefined) {
+                metrics.appendChild(createTestMetric('Test Snippet', test.has_test_snippet ? 'Yes' : 'No'));
+            }
+            if (test.has_confirmation !== undefined) {
+                metrics.appendChild(createTestMetric('Confirmation', test.has_confirmation ? 'Yes' : 'No'));
+            }
+            if (test.has_web_results !== undefined) {
+                metrics.appendChild(createTestMetric('Web Results', test.has_web_results ? 'Yes' : 'No'));
+            }
+            if (test.total_chars !== undefined) {
+                metrics.appendChild(createTestMetric('Total Chars', test.total_chars));
+            }
+
+            card.appendChild(metrics);
+
+            if (test.quality_score !== undefined) {
+                const indicator = document.createElement('div');
+                indicator.className = 'quality-indicator';
+                const fill = document.createElement('div');
+                fill.className = 'quality-fill';
+                fill.style.width = test.quality_score + '%';
+                indicator.appendChild(fill);
+                card.appendChild(indicator);
+            }
+
+            return card;
+        }
+
+        function createTestMetric(label, value) {
+            const metric = document.createElement('div');
+            metric.className = 'test-metric';
+
+            const labelEl = document.createElement('div');
+            labelEl.className = 'test-metric-label';
+            labelEl.textContent = label;
+
+            const valueEl = document.createElement('div');
+            valueEl.className = 'test-metric-value';
+            valueEl.textContent = value;
+
+            metric.appendChild(labelEl);
+            metric.appendChild(valueEl);
+
+            return metric;
+        }
+
+        loadReport();
+    </script>
+</body>
+
+</html>

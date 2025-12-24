@@ -1,0 +1,273 @@
+{
+  "framework": "Structural AgentEval Pipeline",
+  "type": "Non-LLM Component Testing",
+  "standard": "Microsoft AgentEval",
+  "timestamp": "2025-12-24T22:19:35.618233",
+  "execution_time": 23.65,
+  "overall_metrics": {
+    "total_tests": 36,
+    "successful_tests": 35,
+    "failed_tests": 1,
+    "overall_success_rate": 97.22,
+    "overall_score": 97.86,
+    "grade": "A (Excellent)"
+  },
+  "category_results": {
+    "backend_components": {
+      "category": "Backend Components",
+      "total_tests": 10,
+      "successful": 10,
+      "failed": 0,
+      "success_rate": 100.0,
+      "detailed_results": [
+        {
+          "module": "backend.learning_agent",
+          "success": true
+        },
+        {
+          "module": "backend.agentic_agent",
+          "success": true
+        },
+        {
+          "module": "backend.flashcards",
+          "success": true
+        },
+        {
+          "module": "backend.quizes",
+          "success": true
+        },
+        {
+          "module": "backend.slide_decks",
+          "success": true
+        },
+        {
+          "module": "backend.manage_books",
+          "success": true
+        },
+        {
+          "module": "backend.exam_reviewer",
+          "success": true
+        },
+        {
+          "module": "backend.history_manager",
+          "success": true
+        },
+        {
+          "module": "backend.database",
+          "success": true
+        },
+        {
+          "module": "backend.query_rag",
+          "success": true
+        }
+      ]
+    },
+    "tools": {
+      "category": "Tools",
+      "total_tests": 8,
+      "successful": 8,
+      "failed": 0,
+      "success_rate": 100.0,
+      "detailed_results": [
+        {
+          "module": "tools.LLM_APIS",
+          "success": true
+        },
+        {
+          "module": "tools.unified_search",
+          "success": true
+        },
+        {
+          "module": "tools.web_search",
+          "success": true
+        },
+        {
+          "module": "tools.ocr_tool",
+          "success": true
+        },
+        {
+          "module": "tools.Googlecalender",
+          "success": true
+        },
+        {
+          "module": "tools.task_scheduler",
+          "success": true
+        },
+        {
+          "module": "tools.chunking_indexing",
+          "success": true
+        },
+        {
+          "module": "tools.retrieve_chunks",
+          "success": true
+        }
+      ]
+    },
+    "frontend": {
+      "category": "Frontend",
+      "total_tests": 7,
+      "successful": 6,
+      "failed": 1,
+      "success_rate": 85.71,
+      "detailed_results": [
+        {
+          "file": "templates/dashboard.html",
+          "success": true,
+          "exists": true,
+          "has_html_structure": true,
+          "has_body": true,
+          "file_size": 18236
+        },
+        {
+          "file": "templates/ai_assistant.html",
+          "success": true,
+          "exists": true,
+          "has_html_structure": true,
+          "has_body": true,
+          "file_size": 34350
+        },
+        {
+          "file": "templates/flashcards.html",
+          "success": false,
+          "exists": false
+        },
+        {
+          "file": "templates/quizes.html",
+          "success": true,
+          "exists": true,
+          "has_html_structure": true,
+          "has_body": true,
+          "file_size": 27260
+        },
+        {
+          "file": "templates/slide_decks.html",
+          "success": true,
+          "exists": true,
+          "has_html_structure": true,
+          "has_body": true,
+          "file_size": 22019
+        },
+        {
+          "file": "templates/manage_books.html",
+          "success": true,
+          "exists": true,
+          "has_html_structure": true,
+          "has_body": true,
+          "file_size": 30861
+        },
+        {
+          "file": "templates/exam_reviewer.html",
+          "success": true,
+          "exists": true,
+          "has_html_structure": true,
+          "has_body": true,
+          "file_size": 36889
+        }
+      ]
+    },
+    "database": {
+      "category": "Database",
+      "total_tests": 1,
+      "successful": 1,
+      "failed": 0,
+      "success_rate": 100.0,
+      "detailed_results": [
+        {
+          "test": "books.db",
+          "success": true,
+          "exists": true,
+          "readable": true,
+          "has_tables": true,
+          "tables": [
+            "books",
+            "sqlite_sequence"
+          ]
+        }
+      ]
+    },
+    "configuration": {
+      "category": "Configuration",
+      "total_tests": 4,
+      "successful": 4,
+      "failed": 0,
+      "success_rate": 100.0,
+      "detailed_results": [
+        {
+          "test": "API Keys",
+          "success": true,
+          "groq_configured": true,
+          "gemini_configured": true
+        },
+        {
+          "file": "app.py",
+          "success": true,
+          "exists": true,
+          "test": "Required File: app.py"
+        },
+        {
+          "file": "requirements.txt",
+          "success": true,
+          "exists": true,
+          "test": "Required File: requirements.txt"
+        },
+        {
+          "file": "README.md",
+          "success": true,
+          "exists": true,
+          "test": "Required File: README.md"
+        }
+      ]
+    },
+    "file_structure": {
+      "category": "File Structure",
+      "total_tests": 6,
+      "successful": 6,
+      "failed": 0,
+      "success_rate": 100.0,
+      "detailed_results": [
+        {
+          "test": "Directory: backend",
+          "path": "backend",
+          "success": true,
+          "exists": true,
+          "file_count": 14
+        },
+        {
+          "test": "Directory: tools",
+          "path": "tools",
+          "success": true,
+          "exists": true,
+          "file_count": 11
+        },
+        {
+          "test": "Directory: templates",
+          "path": "templates",
+          "success": true,
+          "exists": true,
+          "file_count": 10
+        },
+        {
+          "test": "Directory: evaluation",
+          "path": "evaluation",
+          "success": true,
+          "exists": true,
+          "file_count": 13
+        },
+        {
+          "test": "Directory: chat_history",
+          "path": "chat_history",
+          "success": true,
+          "exists": true,
+          "file_count": 6
+        },
+        {
+          "test": "Directory: books",
+          "path": "books",
+          "success": true,
+          "exists": true,
+          "file_count": 3
+        }
+      ]
+    }
+  }
+}

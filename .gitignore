@@ -1,0 +1,22 @@
+# Environment files
+.env
+
+
+# Python cache
+__pycache__/
+*.pyc
+
+# VS Code settings
+.vscode/
+
+# Mac system files
+.DS_Store
+*.db
+__pycache__/
+*.pyc
+chroma_index/
+chat_history/
+books/
+token.json
+tools/client_secret_*.json
+ENV_SETUP.md

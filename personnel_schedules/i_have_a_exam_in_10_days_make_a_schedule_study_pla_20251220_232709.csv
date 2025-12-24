@@ -1,0 +1,11 @@
+day,work
+Day 1,"Review CUDA programming model basics: host vs. device, kernel launch syntax. Verify CUDA toolkit installation and run a simple 'Hello World' CUDA program. Practice using `cudaGetDeviceProperties`."
+Day 2,"Implement a vector addition kernel. Practice global memory allocation (`cudaMalloc`), deallocation (`cudaFree`), and data transfers (`cudaMemcpy`). Experiment with different block and grid dimensions."
+Day 3,Focus on shared memory. Implement a simple matrix transpose or a block-wise sum reduction using shared memory. Practice `__syncthreads()` for intra-block synchronization.
+Day 4,"Explore constant memory for read-only data. Implement an example using constant memory. Integrate robust CUDA error checking (`cudaGetLastError`, `cudaError_t`) into all previous programs."
+Day 5,"Understand warp-level primitives. Implement a simple warp-level reduction (e.g., using `__shfl_sync`). Practice atomic operations (`atomicAdd`, `atomicMax`) to prevent race conditions in global memory."
+Day 6,"Learn about CUDA streams for asynchronous execution. Modify a previous program (e.g., vector addition) to use multiple streams to overlap data transfers and kernel computations. Understand `cudaMemcpyAsync`."
+Day 7,"Introduction to profiling with NVIDIA Nsight Systems/Compute or `nvprof`. Profile a previous CUDA program to identify performance bottlenecks (e.g., memory bandwidth, occupancy). Attempt basic optimizations based on profiling data."
+Day 8,Implement an optimized matrix multiplication kernel using shared memory tiling and careful memory access patterns. Compare its performance against a naive global memory implementation.
+Day 9,Practice various reduction strategies. Implement a parallel sum reduction using both shared memory and warp-level operations. Study the concept of scan (prefix sum) and attempt a simplified implementation.
+Day 10,"Comprehensive review of all CUDA concepts: memory hierarchy, kernel launch, synchronization, streams, error handling, and optimization techniques. Solve 2-3 new practice problems that combine multiple concepts, focusing on efficient implementation."

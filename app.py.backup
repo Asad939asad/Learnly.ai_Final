@@ -1,0 +1,105 @@
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory
+from werkzeug.utils import secure_filename
+import os
+from backend.flashcards import generate_flashcards
+
+app = Flask(__name__)
+app.config['BOOKS_FOLDER'] = 'books'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+
+# Ensure books directory exists
+os.makedirs(app.config['BOOKS_FOLDER'], exist_ok=True)
+
+@app.route('/')
+def dashboard():
+    return render_template('dashboard.html', active_page='dashboard')
+
+@app.route('/quizes')
+def quizes():
+    return render_template('quizes.html', active_page='quizes')
+
+@app.route('/flashcards')
+def flashcards():
+    books = get_available_books()
+    return render_template('flash_cards.html', active_page='flashcards', books=books)
+
+@app.route('/manage_books')
+def manage_books():
+    return render_template('manage_books.html', active_page='books')
+
+@app.route('/slidedecks')
+def slidedecks():
+    return render_template('slidedecks.html', active_page='slidedecks')
+
+@app.route('/list_books')
+def list_books():
+    books = get_available_books()
+    return jsonify({
+        'status': 'success',
+        'books': books
+    })
+
+@app.route('/upload_book', methods=['POST'])
+def upload_book():
+    if 'book' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No file provided'}), 400
+    
+    file = request.files['book']
+    if file.filename == '':
+        return jsonify({'status': 'error', 'message': 'No file selected'}), 400
+    
+    if file:
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['BOOKS_FOLDER'], filename)
+        file.save(file_path)
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Book uploaded successfully'
+        })
+
+@app.route('/delete_book', methods=['POST'])
+def delete_book():
+    data = request.get_json()
+    book_name = data.get('name')
+    
+    if not book_name:
+        return jsonify({'status': 'error', 'message': 'No book name provided'}), 400
+    
+    file_path = os.path.join(app.config['BOOKS_FOLDER'], secure_filename(book_name))
+    
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            return jsonify({'status': 'success', 'message': 'Book deleted successfully'})
+        else:
+            return jsonify({'status': 'error', 'message': 'Book not found'}), 404
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/generate_flashcards', methods=['POST'])
+def create_flashcards():
+    data = request.get_json()
+    use_rag = data.get('use_rag', False)
+    
+    # For now, just return sample flashcards
+    return jsonify(generate_flashcards(use_rag))
+
+def get_available_books():
+    books = []
+    for filename in os.listdir(app.config['BOOKS_FOLDER']):
+        file_path = os.path.join(app.config['BOOKS_FOLDER'], filename)
+        if os.path.isfile(file_path):
+            file_type = os.path.splitext(filename)[1][1:].upper()
+            books.append({
+                'name': filename,
+                'type': file_type
+            })
+    return books
+
+@app.route('/logout')
+def logout():
+    return redirect(url_for('dashboard'))
+
+if __name__ == '__main__':
+    app.run(debug=True)

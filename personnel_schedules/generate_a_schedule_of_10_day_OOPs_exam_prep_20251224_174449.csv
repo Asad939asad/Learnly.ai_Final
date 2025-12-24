@@ -1,0 +1,11 @@
+day,work
+Day 1,"Understand core OOP principles (Encapsulation, Inheritance, Polymorphism, Abstraction) and their advantages. Learn Class and Object basics: definition, creation, attributes, methods."
+Day 2,"Deep dive into Classes and Objects: Constructors (default, parameterized, copy), 'this' keyword, static members (variables, methods, blocks), and their usage."
+Day 3,"Focus on Encapsulation: Learn access specifiers (public, private, protected, default/package-private), how to achieve data hiding, and implement getters and setters."
+Day 4,"Study Inheritance: Understand its purpose, different types (single, multilevel, hierarchical, hybrid), 'super' keyword, and basic method overriding concepts."
+Day 5,Explore Polymorphism (Part 1 - Compile-time/Static): Master method overloading (different signatures) and revisit method overriding as a base for runtime polymorphism.
+Day 6,"Explore Polymorphism (Part 2 - Runtime/Dynamic) and Abstraction (Part 1): Understand dynamic method dispatch, abstract classes, abstract methods, and their roles."
+Day 7,"Focus on Abstraction (Part 2): Learn Interfaces, differences between abstract classes and interfaces, and their practical application. Review Association, Aggregation, and Composition."
+Day 8,"Study Exception Handling: Understand 'try', 'catch', 'finally' blocks, 'throw' and 'throws' keywords, checked vs. unchecked exceptions, and how to create custom exceptions."
+Day 9,"Review all core OOP concepts, practice small coding examples for each principle, and understand miscellaneous important keywords like 'final' (variables, methods, classes)."
+Day 10,"Solve comprehensive practice problems, tackle previous year's exam questions, and take a full-length mock test to assess understanding and time management."

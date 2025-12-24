@@ -1,0 +1,138 @@
+{
+  "framework": "Complete AgentEval Pipeline",
+  "standard": "Microsoft Educational Agents",
+  "timestamp": "2025-12-24T22:07:52.007685",
+  "total_execution_time": 60.49,
+  "overall_metrics": {
+    "total_tests": 10,
+    "successful_tests": 10,
+    "failed_tests": 0,
+    "overall_success_rate": 100.0,
+    "overall_quality_score": 97.0,
+    "grade": "A (Excellent)"
+  },
+  "component_results": {
+    "learning_agent": {
+      "component": "Learning Agent",
+      "total_tests": 5,
+      "successful": 5,
+      "failed": 0,
+      "success_rate": 100.0,
+      "avg_execution_time": 4.54,
+      "avg_quality_score": 94,
+      "detailed_results": [
+        {
+          "test_id": "LA-001",
+          "query": "Explain machine learning",
+          "success": true,
+          "execution_time": 2.3,
+          "response_length": 2034,
+          "has_test_snippet": true,
+          "quality_score": 100
+        },
+        {
+          "test_id": "LA-002",
+          "query": "How do neural networks work?",
+          "success": true,
+          "execution_time": 3.48,
+          "response_length": 120,
+          "has_test_snippet": true,
+          "quality_score": 70
+        },
+        {
+          "test_id": "LA-003",
+          "query": "Teach me Python list comprehensions",
+          "success": true,
+          "execution_time": 2.67,
+          "response_length": 905,
+          "has_test_snippet": true,
+          "quality_score": 100
+        },
+        {
+          "test_id": "LA-004",
+          "query": "What is quantum computing?",
+          "success": true,
+          "execution_time": 11.43,
+          "response_length": 1707,
+          "has_test_snippet": true,
+          "quality_score": 100
+        },
+        {
+          "test_id": "LA-005",
+          "query": "Explain supervised vs unsupervised learning",
+          "success": true,
+          "execution_time": 2.8,
+          "response_length": 1898,
+          "has_test_snippet": true,
+          "quality_score": 100
+        }
+      ]
+    },
+    "agentic_agent": {
+      "component": "Agentic Agent",
+      "total_tests": 3,
+      "successful": 3,
+      "failed": 0,
+      "success_rate": 100.0,
+      "avg_execution_time": 9.35,
+      "avg_quality_score": 100,
+      "detailed_results": [
+        {
+          "test_id": "AA-001",
+          "query": "Schedule meeting tomorrow at 3pm",
+          "success": true,
+          "execution_time": 7.75,
+          "has_confirmation": true,
+          "quality_score": 100
+        },
+        {
+          "test_id": "AA-002",
+          "query": "Create task to review Python docs",
+          "success": true,
+          "execution_time": 10.03,
+          "has_confirmation": true,
+          "quality_score": 100
+        },
+        {
+          "test_id": "AA-003",
+          "query": "Remind me to study tomorrow",
+          "success": true,
+          "execution_time": 10.26,
+          "has_confirmation": true,
+          "quality_score": 100
+        }
+      ]
+    },
+    "unified_search": {
+      "component": "Unified Search",
+      "total_tests": 2,
+      "successful": 2,
+      "failed": 0,
+      "success_rate": 100.0,
+      "avg_execution_time": 4.88,
+      "avg_quality_score": 100,
+      "detailed_results": [
+        {
+          "test_id": "US-001",
+          "query": "latest AI developments",
+          "success": true,
+          "execution_time": 4.16,
+          "has_web_results": true,
+          "has_wiki_results": true,
+          "total_chars": 1000,
+          "quality_score": 100
+        },
+        {
+          "test_id": "US-002",
+          "query": "machine learning algorithms",
+          "success": true,
+          "execution_time": 5.59,
+          "has_web_results": true,
+          "has_wiki_results": true,
+          "total_chars": 1000,
+          "quality_score": 100
+        }
+      ]
+    }
+  }
+}

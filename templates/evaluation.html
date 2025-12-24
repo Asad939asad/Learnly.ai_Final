@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Evaluation Results - Learnly.ai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .metric-card {
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-blue-600 text-white sticky-sidebar">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold mb-8">Learnly.ai</h1>
+                <nav class="space-y-2">
+                    <a href="/" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+                    <a href="/evaluation" class="flex items-center space-x-3 p-3 rounded-lg bg-white/10">
+                        <span class="font-medium">📊 Evaluation</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <div class="bg-white border-b p-4">
+                <h2 class="text-2xl font-bold text-gray-900">Agent Evaluation Results</h2>
+                <p class="text-sm text-gray-500 mt-1">Comprehensive benchmarking of the multi-agent AI tutor system</p>
+            </div>
+
+            <div class="max-w-7xl mx-auto p-6">
+                {% if error %}
+                <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
+                    <h3 class="text-lg font-bold text-red-800 mb-2"> Error</h3>
+                    <p class="text-red-700">{{ error }}</p>
+                </div>
+                {% elif evaluation %}
+
+                <!-- Metadata -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4"> Evaluation Metadata</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Timestamp</p>
+                            <p class="font-semibold text-gray-900">{{ evaluation.evaluation_metadata.timestamp }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Agent System</p>
+                            <p class="font-semibold text-gray-900">{{ evaluation.evaluation_metadata.agent_system }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p class="font-semibold text-green-600"> {{ evaluation.summary.overall_status }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benchmark Results -->
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">🎯 Benchmark Results</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Task Success Rate -->
+                    <div class="metric-card bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-gray-900">Task Success Rate</h4>
+                            <span class="text-3xl"></span>
+                        </div>
+                        <div class="text-4xl font-bold text-blue-600 mb-2">
+                            {{ evaluation.benchmarks.task_success.success_rate_percentage }}%
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            {{ evaluation.benchmarks.task_success.successful }}/{{
+                            evaluation.benchmarks.task_success.total_tasks }} tasks completed
+                        </p>
+                    </div>
+
+                    <!-- Tool Usage -->
+                    <div class="metric-card bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-gray-900">Tool Usage Accuracy</h4>
+                            <span class="text-3xl">🔧</span>
+                        </div>
+                        <div class="text-4xl font-bold text-green-600 mb-2">
+                            {{ evaluation.benchmarks.tool_usage.accuracy_percentage }}%
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            {{ evaluation.benchmarks.tool_usage.correct_usage }}/{{
+                            evaluation.benchmarks.tool_usage.total_tests }} correct
+                        </p>
+                    </div>
+
+                    <!-- RAG Quality -->
+                    <div class="metric-card bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-gray-900">RAG Quality Score</h4>
+                            <span class="text-3xl"></span>
+                        </div>
+                        <div class="text-4xl font-bold text-purple-600 mb-2">
+                            {{ evaluation.benchmarks.rag_quality.average_quality_score }}/100
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            {{ evaluation.benchmarks.rag_quality.queries_tested }} queries tested
+                        </p>
+                    </div>
+
+                    <!-- Latency -->
+                    <div class="metric-card bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-gray-900">Response Latency</h4>
+                            <span class="text-3xl">⏱</span>
+                        </div>
+                        <div class="text-4xl font-bold text-orange-600 mb-2">
+                            {{ evaluation.benchmarks.latency.average_latency_seconds }}s
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            Range: {{ evaluation.benchmarks.latency.min_latency_seconds }}s - {{
+                            evaluation.benchmarks.latency.max_latency_seconds }}s
+                        </p>
+                    </div>
+
+                    <!-- Cost -->
+                    <div class="metric-card bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-gray-900">Cost Efficiency</h4>
+                            <span class="text-3xl"></span>
+                        </div>
+                        <div class="text-4xl font-bold text-emerald-600 mb-2">
+                            ${{ evaluation.benchmarks.cost_efficiency.cost_per_query_usd }}
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            per query ({{ evaluation.benchmarks.cost_efficiency.queries_processed }} queries)
+                        </p>
+                    </div>
+
+                    <!-- Summary -->
+                    <div
+                        class="metric-card bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl shadow-sm border border-blue-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-gray-900">Overall Status</h4>
+                            <span class="text-3xl"></span>
+                        </div>
+                        <div class="text-2xl font-bold text-blue-600 mb-2">
+                            {{ evaluation.summary.benchmarks_completed }}/{{ evaluation.summary.total_benchmarks }}
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            Benchmarks Completed
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Detailed Results -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4"> Detailed JSON Report</h3>
+                    <pre
+                        class="bg-gray-50 p-4 rounded-lg overflow-auto text-sm text-gray-800 max-h-96">{{ evaluation | tojson(indent=2) }}</pre>
+                </div>
+
+                <!-- Download Button -->
+                <div class="mt-6 flex justify-center">
+                    <a href="/evaluation/download"
+                        class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                        📥 Download Full Report (JSON)
+                    </a>
+                </div>
+
+                {% else %}
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-yellow-800 mb-2"> No Evaluation Data</h3>
+                    <p class="text-yellow-700">Run the evaluation script first:</p>
+                    <code class="block mt-2 bg-yellow-100 p-2 rounded">python3 evaluation/simple_evaluator.py</code>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

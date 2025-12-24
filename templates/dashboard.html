@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learnly.ai - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        accent: '#60a5fa',
+                        secondary: '#2563eb',
+                        tertiary: '#1d4ed8',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-checkbox:checked {
+            background-color: #1d4ed8;
+            border-color: #3b82f6;
+        }
+
+        .bg-white border-b-2 border-gray-200 {
+            background: white;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(159, 61, 255, 0.1);
+        }
+
+        .subject-scroll {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .subject-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .subject-scroll::-webkit-scrollbar-track {
+            background: linear-gradient(135deg, rgba(159, 61, 255, 0.1) 0%, rgba(255, 61, 159, 0.1) 100%);
+            border-radius: 10px;
+        }
+
+        .subject-scroll::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 10px;
+        }
+
+        .class-select {
+            transition: all 0.3s ease;
+        }
+
+        .class-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .class-option:hover {
+            transform: translateY(-2px);
+            background-color: rgba(159, 61, 255, 0.1);
+        }
+
+        .class-option.selected {
+            background-color: #3b82f6;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .sticky-sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sticky-sidebar::-webkit-scrollbar {
+            width: 0px;
+        }
+    </style>
+
+    <style>
+        /* Subtle blackish overlay */
+        body {
+            background-color: #f8f9fa !important;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.03);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Hide scrollbars but keep functionality */
+        * {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+    </style>
+
+</head>
+
+<body class="bg-white font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-blue-600 text-white sticky-sidebar">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold mb-8 flex items-center">
+                    <!-- <svg class="w-8 h-8 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"> -->
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
+                    </svg>
+                    Learnly.ai
+                </h1>
+                <nav class="space-y-2">
+                    <a href="/" class="flex items-center space-x-3 p-3 rounded-lg bg-white/10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+                    <a href="/ai_assistant"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">AI Assistant</span>
+                    </a>
+                    <a href="/learning_agent"
+                        class="flex items-center space-x-3 p-3 rounded-lg {% if active_page == 'learning_agent' %}bg-white/10{% else %}hover:bg-white/10 transition-colors{% endif %}">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Learning Agent</span>
+                    </a>
+                    <a href="/exam_reviewer"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Exam Reviewer</span>
+                    </a>
+                    <a href="/quizes"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Quizes</span>
+                    </a>
+                    <a href="/flashcards"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                        <span class="font-medium">Flash Cards</span>
+                    </a>
+                    <a href="/slidedecks"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Slide Decks</span>
+                    </a>
+                    <a href="/manage_books"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                            </path>
+                        </svg>
+                        <span class="font-medium">Books Manager</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top Bar -->
+            <div class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
+                <div class="flex space-x-6">
+                    <!-- <a href="#" class="text-gray-600 hover:text-primary font-medium">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-primary font-medium">Explore</a>
+                    <a href="#" class="text-gray-600 hover:text-primary font-medium">Resources</a>-->
+                    <a href="#" class="text-violet-600 text-2xl hover:text-blue-800 font-bold font-inter">Keep Learning,
+                        Asad</a>
+
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <img src="https://ui-avatars.com/api/?name=Asad" alt="Asad"
+                            class="w-8 h-8 rounded-full ring-2 ring-primary">
+                        <span class="text-sm font-semibold text-gray-800">Asad</span>
+                    </div>
+                    <a href="/logout" class="text-gray-600 hover:text-gray-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Form -->
+            <div class="max-w-7xl mx-auto p-6">
+                <!-- Welcome Banner -->
+                <div class="mb-6 bg-white rounded-xl p-6 text-white">
+                    <h2 class="text-3xl font-bold mb-2">Welcome to Learnly.ai</h2>
+                    <p class="text-lg text-gray-600">Your personalized learning journey begins with Learnly.ai</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 space-y-6">
+                    <!-- Class Selection -->
+                    <div class="space-y-3">
+                        <label class="block text-xl font-bold text-gray-900">Class</label>
+                        <div class="grid grid-cols-6 gap-3" id="classSelector">
+                            <!-- Class options will be added by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Subject Selection -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xl font-bold text-gray-900">Select Subjects</label>
+                            <span id="subject-count" class="text-sm font-medium text-gray-500">0 of 2 selected</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-3" id="subjectSelector">
+                            <!-- Subject options will be added by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Study Topic Input -->
+                    <div class="space-y-3">
+                        <label for="study-topic" class="block text-xl font-bold text-gray-900">What would you like to
+                            study?</label>
+                        <textarea id="study-topic"
+                            class="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all h-24"
+                            placeholder="Describe what you'd like to learn..."></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button onclick="submitForm()"
+                        class="w-full bg-blue-600 text-white py-4 px-6 text-lg font-bold rounded-xl hover:bg-blue-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl">
+                        Start Learning
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize class selector
+        const classSelector = document.getElementById('classSelector');
+        for (let i = 1; i <= 12; i++) {
+            const classOption = document.createElement('div');
+            classOption.className = 'class-option p-4 text-center rounded-xl border-2 border-gray-200 text-lg cursor-pointer transition-all duration-300';
+            classOption.textContent = `Class ${i}`;
+            classOption.dataset.class = i;
+            classOption.onclick = function () {
+                document.querySelectorAll('.class-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+            };
+            classSelector.appendChild(classOption);
+        }
+
+        // Initialize subject selector
+        const subjects = [
+            'Mathematics', 'Physics', 'Chemistry', 'Biology',
+            'Geography', 'History', 'General Sciences', 'Other'
+        ];
+        const subjectSelector = document.getElementById('subjectSelector');
+        subjects.forEach(subject => {
+            const subjectOption = document.createElement('div');
+            subjectOption.className = 'class-option p-4 text-center rounded-xl border-2 border-gray-200 text-lg cursor-pointer transition-all duration-300';
+            subjectOption.textContent = subject;
+            subjectOption.dataset.subject = subject;
+            subjectOption.onclick = function () {
+                const selectedSubjects = document.querySelectorAll('#subjectSelector .selected');
+                if (!this.classList.contains('selected') && selectedSubjects.length >= 2) {
+                    alert('You can only select up to 2 subjects');
+                    return;
+                }
+                this.classList.toggle('selected');
+                const newSelectedCount = document.querySelectorAll('#subjectSelector .selected').length;
+                document.getElementById('subject-count').textContent = `${newSelectedCount} of 2 selected`;
+            };
+            subjectSelector.appendChild(subjectOption);
+        });
+
+        function submitForm() {
+            const selectedClass = document.querySelector('.class-option.selected')?.dataset.class;
+            const studyTopic = document.getElementById('study-topic').value.trim();
+            const selectedSubjects = Array.from(document.querySelectorAll('#subjectSelector .selected'))
+                .map(div => div.dataset.subject);
+
+            if (!selectedClass) {
+                alert('Please select your class');
+                return;
+            }
+
+            if (selectedSubjects.length === 0) {
+                alert('Please select at least one subject');
+                return;
+            }
+
+            fetch('/submit_user_info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    class: selectedClass,
+                    study_topic: studyTopic,
+                    subjects: selectedSubjects
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Information saved successfully!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+        }
+    </script>
+</body>
+
+</html>

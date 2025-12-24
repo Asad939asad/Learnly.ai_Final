@@ -1,0 +1,70 @@
+{
+  "framework": "Backend Components AgentEval",
+  "standard": "Microsoft AgentEval",
+  "timestamp": "2025-12-24T22:48:04.502719",
+  "total_execution_time": 95.57,
+  "overall_metrics": {
+    "total_components": 6,
+    "successful_tests": 6,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "avg_quality_score": 100,
+    "grade": "A (Excellent)"
+  },
+  "component_results": {
+    "learning_agent": {
+      "component": "Learning Agent",
+      "query": "Explain Python decorators",
+      "success": true,
+      "execution_time": 3.92,
+      "response_length": 2174,
+      "has_test_snippet": true,
+      "confidence": 0.95,
+      "quality_score": 100
+    },
+    "agentic_agent": {
+      "component": "Agentic Agent",
+      "query": "Schedule a meeting tomorrow at 2pm",
+      "success": true,
+      "execution_time": 7.96,
+      "has_confirmation": true,
+      "quality_score": 100
+    },
+    "quizes": {
+      "component": "Quiz Generator",
+      "prompt": "Python basics",
+      "success": true,
+      "quality_score": 100,
+      "execution_time": 12.54,
+      "num_questions": 3,
+      "has_correct_answers": true
+    },
+    "slide_decks": {
+      "component": "Slide Deck Generator",
+      "title": "Python Basics",
+      "prompt": "Introduction to Python programming",
+      "success": true,
+      "quality_score": 100,
+      "execution_time": 27.48,
+      "num_slides": 12,
+      "has_title": true
+    },
+    "flashcards": {
+      "component": "Flashcard Generator",
+      "query": "Python data structures",
+      "success": true,
+      "quality_score": 100,
+      "execution_time": 18.37,
+      "num_cards": 10,
+      "has_qa_structure": true
+    },
+    "exam_reviewer": {
+      "component": "Exam Reviewer",
+      "question": "What is object-oriented programming?",
+      "success": true,
+      "execution_time": 25.3,
+      "num_results": 1,
+      "quality_score": 100
+    }
+  }
+}
